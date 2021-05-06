@@ -12,25 +12,23 @@ client = commands.Bot(command_prefix = '$', intents=intents)
 
 @client.event
 async def on_ready():
-    print(f"We have logged in as {client}")
+    print(f"We have logged in as {client.user.id}")
 
 
 @client.event
 async def on_message(message):
-    if message.author == client.user:
-        return
-
-    if message.content.startswith("$hello"):
-        await message.channel.send("Hello!")
-
     await client.process_commands(message)
+
 
 @client.command()
 async def owo(ctx):
-    if ctx.author == client.user:
-        return
-    
-    else:
-        await ctx.send("owo")
+    await ctx.send("owo")
 
-client.run(os.getenv("DISCORD_TOKEN"))
+
+@client.command()
+async def hello(ctx):
+    await ctx.send("World!")
+
+
+if __name__ == "__main__":
+    client.run(os.getenv("DISCORD_TOKEN"))
