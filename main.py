@@ -1,1 +1,6 @@
-print("Hello World!")
+import discord
+from discord.ext import commands
+
+bot = commands.Bot(command_prefix="-", description="")
+
+bot.run("todo")
