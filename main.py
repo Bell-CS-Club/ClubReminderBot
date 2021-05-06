@@ -1,6 +1,23 @@
 import discord
-from discord.ext import commands
+import os
 
-bot = commands.Bot(command_prefix="-", description="")
+from dotenv import load_dotenv
+load_dotenv()
 
-bot.run("todo")
+client = discord.Client()
+
+@client.event
+async def on_ready():
+    print(f"We have logged in as {client}")
+
+
+@client.event
+async def on_message(message):
+    if message.author == client.user:
+        return
+
+    if message.content.startswith("$hello"):
+        await message.channel.send("Hello!")
+
+
+client.run(os.getenv("DISCORD_TOKEN"))
