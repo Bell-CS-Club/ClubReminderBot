@@ -1,9 +1,8 @@
 import discord
+from discord.ext import commands
 import os
 
 from dotenv import load_dotenv
-from discord.ext import commands
-
 load_dotenv()
 
 intents = discord.Intents.default()
@@ -13,7 +12,7 @@ client = commands.Bot(command_prefix = '$', intents=intents)
 
 @client.event
 async def on_ready():
-    print("We have logged in as {0.user}".format(client))
+    print(f"We have logged in as {client}")
 
 
 @client.event
@@ -24,8 +23,9 @@ async def on_message(message):
     if message.content.startswith("$hello"):
         await message.channel.send("Hello!")
 
-        
-@client.command
+    await client.process_commands(message)
+
+@client.command()
 async def owo(ctx):
     if ctx.author == client.user:
         return
