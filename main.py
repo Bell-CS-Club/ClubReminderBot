@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 import os
+import asyncio
 
 from dotenv import load_dotenv
 
@@ -35,6 +36,38 @@ async def hello(ctx):
 async def shutdown(ctx):
     await ctx.send("Shutting down!")
     await client.close()
+
+
+@client.command()
+async def msg_role(ctx, *roles):
+    if not ctx.message.role_mentions:
+        await ctx.reply("Mention roles nerd.")
+        return
+    
+    await ctx.reply("What is your message?")
+    def get_msg(message):
+        return message.author == ctx.author and message.channel == ctx.channel
+
+    try:
+        msg = await client.wait_for('message', timeout=20.0, check=get_msg)
+    except asyncio.TimeoutError:
+        await ctx.reply('Bro enter a message or practice your typing speed.')
+        return
+    
+    members_msg = []
+    for role in ctx.message.role_mentions:
+        for member in role.members:
+            if (member not in members_msg) and (not member.bot):
+                try:
+                    print(f'Sending message from {ctx.author.mention} to {member.mention}...\n')
+                    await member.send(msg.content)
+                except:
+                    pass
+                members_msg.append(member)
+            #print(members_msg)
+            #print('')
+    print('\n--------------------------------------------------------\n')
+    await msg.reply('Message(s) sent.')
 
 
 if __name__ == "__main__":
