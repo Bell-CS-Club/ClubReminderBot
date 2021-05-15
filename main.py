@@ -3,6 +3,8 @@ from discord.ext import commands
 import os
 import asyncio
 
+import bot_functions as bot
+
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -39,36 +41,25 @@ async def shutdown(ctx):
 
 
 @client.command()
-async def msg_role(ctx, *roles):
-    if not ctx.message.role_mentions:
-        await ctx.reply("Mention roles nerd.")
+async def msg(ctx, *, mentions):
+    
+    members_msg = bot.get_mentions(ctx)
+    
+    if not members_msg:
+        await ctx.reply("Mention someone nerd.")
         return
     
     await ctx.reply("What is your message?")
     def get_msg(message):
         return message.author == ctx.author and message.channel == ctx.channel
-
     try:
         msg = await client.wait_for('message', timeout=20.0, check=get_msg)
     except asyncio.TimeoutError:
         await ctx.reply('Bro enter a message or practice your typing speed.')
         return
     
-    members_msg = []
-    for role in ctx.message.role_mentions:
-        for member in role.members:
-            if (member not in members_msg) and (not member.bot):
-                try:
-                    print(f'Sending message from {ctx.author.mention} to {member.mention}...\n')
-                    await member.send(msg.content)
-                except:
-                    pass
-                members_msg.append(member)
-            #print(members_msg)
-            #print('')
-    print('\n--------------------------------------------------------\n')
-    await msg.reply('Message(s) sent.')
+    await bot.dm(ctx, members_msg, msg)
 
 
 if __name__ == "__main__":
-    client.run(os.getenv("DISCORD_TOKEN"))
+    client.run(os.getenv("TOKEN"))
